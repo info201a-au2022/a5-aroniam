@@ -5,9 +5,9 @@ account: aroniam
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7762920
-bundleId: 6583589
+bundleId: 6617068
 url: https://aroniam.shinyapps.io/A5-Climate/
-when: 1670013980.87496
-lastSyncTime: 1670013980.87497
+when: 1670613601.60363
+lastSyncTime: 1670613601.60364
 asMultiple: FALSE
 asStatic: FALSE

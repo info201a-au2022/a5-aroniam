@@ -1,49 +1,46 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 # For a5
 
 library(shiny)
 library(tidyverse)
 library(ggplot2)
-#?write.csv # ask how to use this for p3 
+library(plotly)
 
 emissions <- read.csv("./owid-co2-data.csv") # set session to source file location 
 #View(emissions)
 # DPLYR wrangling for introduction page
-# What is the average co2 emissions in the U.S.?
+
+# Where are ghg emissions the highest per capita?
+highestghg_percapita <- emissions %>%
+  filter(ghg_per_capita == max(ghg_per_capita, na.rm = TRUE)) %>%
+  pull(country)
+print(highestghg_percapita) # outputs "Solomon Islands"
+
+# What is the average greenhouse co2 emissions in the U.S.?
 avg2021_us_co2 <- emissions %>%
   filter(year == 2021) %>%
   filter(country == "United States") %>%
   summarize(co2 = mean(co2, na.rm = T)) %>%
   round(digits = 2) %>%
   pull(co2)
-# print(avg2021_us_co2) # outputs 5007.34
+print(avg2021_us_co2) # outputs 5007.34
 
-# To create an input, you need to call upon the output and create some variable 
-# Define server logic required to draw a histogram
+# Which country has the highest energy use per gdp?
+highest_energyuse <- emissions %>%
+  filter(energy_per_gdp == max(energy_per_gdp, na.rm = TRUE)) %>%
+  pull(country)
+print(highest_energyuse)
 
-#?renderUI # lets you render text, plots, etc 
-# renderUI({}) # parentheses and brackets lets your write multiple lines of code with it
-#?sliderInput
-# Define server logic required to draw a histogram 
+# Server code
 server <- (function(input, output) {
   output$countrywidget <- renderUI({
-    selectInput("country", "Choose a country:", choices = unique(emissions$country))
+    selectInput("country", "Choose a country:", choices = unique(emissions$country), multiple = TRUE, 
+                selected = c("United States", "China"))
   })
-  #output$yearwidget <- renderPrint({
-    #sliderInput("slider1", label = h3("Slider"), min = 2000, 
-                                 #  max = 2021, value = 2021)
-  #output$yearwidget <- renderPrint({
-    #sliderInput(inputId = "year", "Choose a year:", min = 2000, max = 2021, value = 2021,
-                #round = FALSE, format = "#,##0.#####", locale = "us", ticks = TRUE, animate = FALSE)
-  #})
-  # First plot 
+  output$yearwidget <- renderUI({
+    numericInput("year", "Choose a year:", value = 2000, min = 1850, max = 2021, step = 10)
+  })
+  
+  # Plot
   output$countryPlot <- renderPlotly({
     # Making the scatter plot
     
@@ -53,29 +50,22 @@ server <- (function(input, output) {
     
     # adding aesthetics 
     ggplot(plotData) +
-      geom_point(mapping = aes(x = year, y = co2, color = country)) +
+      geom_point(mapping = aes(x = year, y = ghg_per_capita, color = country)) +
       labs(x = "year",
-           y = "total co2 emissions",
-           title = paste("co2 emissions in", input$country))
+           y = "total ghg emissions per capita",
+           title = paste("per capita ghgh emissions in", input$country))
   })
+  # DPLYR outputs 
   output$value <- renderText({
-    paste("this value is", avg2021_us_co2, ".")
+    paste("GHG emissions are the highest per capita (measured in tonnes of CO2 equivalents per capita) in", highestghg_percapita, ".")
+  })
+  output$secondvalue <- renderText({
+    paste("The average CO2 emissions in the U.S. in 2021 were", avg2021_us_co2, "million tonnes.")
+  })
+  output$thirdvalue <- renderText({
+    paste("The country with the highest energy use per GDP (measured in kilowatt-hours per international $) is", highest_energyuse, ".")
   })
 })
 
-# Note: reactive lets the computer know that you want it to change from an input 
-# (reactive updates frequently whenever the input is changed)
-# Note: to get all the countries, use unique to remove duplicates and then call upon
-# the data set (emissions)
-
-# plotData <- emissions %>%
- # filter(country == "Afghanistan")
-
-# adding aesthetics 
-# ggplot(plotData, aes(x = year, y = co2)) +
-  #geom_point(aes(color = country)) +
-  #labs(x = "year",
-   #    y = "total co2 emissions",
-    #   title = paste("co2 emissions in", "Afghanistan"))
 
 

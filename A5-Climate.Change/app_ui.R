@@ -1,67 +1,51 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 # For a5
 
 library(shiny)
 library(plotly)
 library(tidyverse)
 library(ggplot2)
-?tabPanel
-?plotlyOutput
-# How do i add my selectCountry 
-#output$selectCountry <- renderUI({
-#  selectInput("country", "Choose a country:", choices = unique(emissions$country)) # choices you want within the select input widget
-  
-#})
+
+# Page 1
 first_page <- tabPanel(
-  "Introduction",
+  "Home",
   h1("Global Carbon Dioxide Emissions", align = "center"),
+  img(src = "ghg.png", height = 350, width = 780),
+  tags$div(
+    tags$a(href = " https://www.nbcnews.com/politics/supreme-court/supreme-court-takes-epas-power-limit-greenhouse-gas-emissions-rcna17356", "Image citation")),
+  h3("Aronia Mclean"),
+  h4("12/9/2022"),
+  p("This website explores greenhouse gas emissions worldwide. As our population continues to grow, it's important to understand
+    how our habits and practices impact our Earth. We're in a position where our current decisions will affect those negatively or positively
+    just a few years later. It's important to understand our emission patterns and the steps needed to decrease our current emissions. This report
+    will focus particularly on understanding greenhouse gas emissions per capita. Some questions that arise are where are GHG emissions the highest per capita? 
+    What is the average greenhouse CO2 emissions in the U.S.? Lastly, which country has the highest energy use per GDP? Below is some data exploration to better understand the world's emissions 
+    and answer the questions posed."),
   textOutput("value"),
-  p("The average CO2 emissions in the U.S. in 2021 were", em("avg2021_us_co2"), "which were 5007.34 million tonnes.")
+  textOutput("secondvalue"),
+  textOutput("thirdvalue")
 )
 
-# code from darren's demo = works but i'm still getting disconneced from server error
-# Define UI for application that draws a histogram
+# Page 2
 second_page <- tabPanel(
-  "Interactive Visualization",
-  h1("Visualization of Global Carbon Dioxide Emissions", align = "center"),
+  "GHG Emissions",
+  h2("Global GHG Emissions Per Capita", align = "center"),
   sidebarLayout(
     sidebarPanel(
       uiOutput("countrywidget"),
-      sliderInput("year", "Choose a year:",
-                  min = 2000, max = 2021,
-                  value = 2010),
-      #uiOutput("yearwidget"),
-      #choose_year_widget
+      uiOutput("yearwidget"),
     ),
     mainPanel(
       plotlyOutput("countryPlot"),
-      p("This is my paragraph"))
+      p("Caption: This chart presents an interactive visualization of the global greenhouse gas emissions
+        per capita. The first options shown are the United States and China, this is because these are two countries
+        that are known to have among the highest contributions to greenhouse gas emissions. The chart shows that 
+        the United States has been having a downward trend in greenhouse gas emissions over the past twenty years. On the other hand, 
+        China has had an upward trend in greenhouse gas emissions. Ultimately, understanding these emissions and their patterns
+        is very important to understanding what policy suggestions can and should be made. Additionally, this provides insight into
+        how countries can split the burden of reducing emissions in a manner that reflects financial disparities and doesn't unfairly 
+        burden developing countries."))
   ))
-
-# link to create widget for sliderInput: https://shiny.rstudio.com/articles/sliders.html 
-# Making a widget
-#choose_country_widget <- selectInput(
-#  inputId = "country",
-#  label = "Choose_a_country",
-#  choices = unique(emissions$country),
-#  selected = (c("United States")
-#  )
-#)
-# Making a second widget 
-#choose_year_widget <- selectInput(
-#  inputId = "year",
-#  label = "Choose_a_year",
-#  choices = unique(emissions$year)
-#)
-
-
+# UI to put pages together
 ui <- navbarPage(
   "INFO 201 A5",
   first_page,
